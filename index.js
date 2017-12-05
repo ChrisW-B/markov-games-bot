@@ -4,7 +4,10 @@ const games = require('./games');
 require('dotenv').config();
 
 const ONE_MIN = 60 * 1000;
+const isProduction = () => process.env.NODE_ENV === 'production';
+const interval = isProduction() ? ONE_MIN * 30 : 1000;
 
+// initiate twitter
 const client = new Twitter({
   consumer_key: process.env.TWITTER_CONSUMER_KEY,
   consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
@@ -23,11 +26,13 @@ const makeTweet = async () => {
   const game = markov.makeChain();
   try {
     console.log(game);
-    const tweet = await client.post('statuses/update', { status: game });
+    if (isProduction()) {
+      const tweet = await client.post('statuses/update', { status: game });
+    }
   } catch (e) {
     console.log(e);
   }
 }
 
-makeTweet();
-setInterval(makeTweet, ONE_MIN * 30) // every half hour
+makeTweet(); // run on restart, just to check for errors
+setInterval(makeTweet, interval) // every half hour
