@@ -1,5 +1,3 @@
-import { setInterval } from 'timers';
-
 const Markov = require('markov-generator');
 const Twitter = require('twitter');
 const games = require('./games');
